@@ -4,6 +4,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     exit;    
 }
 
+header('Content-Type: application/json');
+header("Access-Control-Allow-Origin: *");
 header('Content-Type: application/json; charset=utf-8');
 $koneksi = mysqli_connect("localhost", "ppns/absensi", "password", "ppns/absensi");
 if(isset($_POST['nuid']) && isset($_POST['x']) && isset($_POST['y']) && isset($_POST['ruang']) && isset($_POST['password'])){
