@@ -5,6 +5,7 @@ import 'package:monitoring_karyawan_ppns/global_variables.dart' as global;
 import 'package:http/http.dart' as http;
 import 'dart:convert' show jsonDecode;
 import 'dart:async';
+import 'package:horizontal_data_table/horizontal_data_table.dart';
 import 'dart:developer';
 
 class AbsensiPage extends StatefulWidget {
@@ -14,86 +15,143 @@ class AbsensiPage extends StatefulWidget {
   State<AbsensiPage> createState() => AbsensiPageState();
 }
 
-
 class AbsensiPageState extends State<AbsensiPage> {
+  // List<dynamic> data = [
+  //   {"Nuid": 1, "Name": "Test", "Ruang": "M102", "Pesan": "Keluar M102", "Timestamp": "2023-04-13 03:02:24"},
+  //   {"Nuid": 2, "Name": "Test", "Ruang": "M102", "Pesan": "Keluar M102", "Timestamp": "2023-04-13 03:02:24"},
+  //   {"Nuid": 2, "Name": "Test", "Ruang": "M102", "Pesan": "Keluar M102", "Timestamp": "2023-04-13 03:02:24"},
+  //   {"Nuid": 2, "Name": "Test", "Ruang": "-", "Pesan": "Keluar M102", "Timestamp": "2023-04-13 03:02:24"},
+  //   {"Nuid": 1, "Name": "Test", "Ruang": "-", "Pesan": "Keluar M102", "Timestamp": "2023-04-13 03:02:24"},
+  //   {"Nuid": 1, "Name": "Test", "Ruang": "M102", "Pesan": "Keluar M102", "Timestamp": "2023-04-13 03:02:24"},
+  // ];
+
+  late List<dynamic>? data;
+  List<dynamic> filteredData = [];
+  final searchController = TextEditingController();
+
   Timer? timer;
   // late List<UserLocation>? userLocation;
+
+  @override
   void initState() {
-    // timer = Timer.periodic(Duration(milliseconds: 100), (Timer t) => updateValue());
+    super.initState();
+    timer = Timer.periodic(Duration(milliseconds: 1000), (Timer t) => updateValue());
   }
 
-  void updateValue() async{
-    var url = Uri.parse(global.endpoint_get_all);
+  @override
+  void dispose() {
+    searchController.dispose();
+    timer?.cancel();
+    super.dispose();
+  }
+
+  void updateValue() async {
+    var url = Uri.parse(global.endpoint_monitor_karyawan_get_all);
     var response = await http.get(url);
-    if (response.statusCode == 200) {
-        debugPrint(jsonDecode(response.body).toString());
-        setState(() {          
-          // userLocation = List<UserLocation>.from((jsonDecode(response.body) as List).map((x) => UserLocation.fromJson(x)).where((content) => content.nuid != null)); 
-        });
+    if (response.statusCode == 200) {  
+      setState(() {
+        data = List<dynamic>.from((jsonDecode(response.body) as List));
+        filteredData = searchController.text.isEmpty
+            ? data!
+            : data!
+                .where((item) =>
+                    item['name'].toLowerCase().contains(searchController.text.toLowerCase()) ||
+                    item['ruang'].toLowerCase().contains(searchController.text.toLowerCase()) ||
+                    item['pesan'].toLowerCase().contains(searchController.text.toLowerCase()) ||
+                    item['timestamp'].toLowerCase().contains(searchController.text.toLowerCase()))
+                .toList();
+      });
     }
   }
 
+  void _onSearchTextChanged(String text) {
+    setState(() {
+      filteredData = text.isEmpty
+          ? data!
+          : data!
+              .where((item) =>
+                  item['Name'].toLowerCase().contains(text.toLowerCase()) ||
+                  item['Role'].toLowerCase().contains(text.toLowerCase()))
+              .toList();
+    });
+  }
+
   Widget build(BuildContext context) {
-    double mapWidth = MediaQuery.of(context).size.width/1.2;
+    double mapWidth = MediaQuery.of(context).size.width / 1.2;
 
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => {
-            timer?.cancel(),
-            Navigator.pop(context),            
-          }
+        appBar: AppBar(
+          leading: IconButton(
+              icon: Icon(Icons.arrow_back),
+              onPressed: () => {
+                    timer?.cancel(),
+                    Navigator.pop(context),
+                  }),
+          title: Text("History Lokasi"),
         ),
-        title: Text("Monitoring Karyawan"),
-      ),
-      body: Center(
-        child: ListView(
-          scrollDirection: Axis.vertical,
-          // mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[   
-              Container(
-                width: 50,
-                height: 50,
-                child: Table(
-                  border: TableBorder.all(color: Color.fromARGB(255, 0, 0, 0), width: 2),
-                  columnWidths: {
-                    0: FixedColumnWidth(100.0),
-                    1: FlexColumnWidth(100.0),
-                    2: FixedColumnWidth(100.0),
-                  },
-                  children: const [
-                    TableRow(children: [
-                      Text("1", style: TextStyle(fontSize: 15.0),),
-                      Text("Mohit", style: TextStyle(fontSize: 15.0),),
-                      Text("25", style: TextStyle(fontSize: 15.0),),
-                    ]),
-                    TableRow(children: [
-                      Text("2", style: TextStyle(fontSize: 15.0),),
-                      Text("Ankit", style: TextStyle(fontSize: 15.0),),
-                      Text("27", style: TextStyle(fontSize: 15.0),),
-                    ]),
-                    TableRow(children: [
-                      Text("3", style: TextStyle(fontSize: 15.0),),
-                      Text("Rakhi", style: TextStyle(fontSize: 15.0),),
-                      Text("26", style: TextStyle(fontSize: 15.0),),
-                    ]),
-                    TableRow(children: [
-                      Text("4", style: TextStyle(fontSize: 15.0),),
-                      Text("Yash", style: TextStyle(fontSize: 15.0),),
-                      Text("29", style: TextStyle(fontSize: 15.0),),
-                    ]),
-                    TableRow(children: [
-                      Text("5", style: TextStyle(fontSize: 15.0),),
-                      Text("Pragati", style: TextStyle(fontSize: 15.0),),
-                      Text("28", style: TextStyle(fontSize: 15.0),),
-                    ]),
-                  ],
-                ),
-              ),              
-          ],
-        ),
-      ),
-    );
+        body: Stack(children: <Widget>[
+          Positioned(
+                top: 0,
+                bottom: 0,
+                left: 0,
+                right: 0,
+                child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: TextField(
+                      controller: searchController,
+                      decoration: const InputDecoration(
+                        hintText: 'Search...',
+                        border: OutlineInputBorder(),
+                      ),
+                      onChanged: _onSearchTextChanged,
+                    ),
+                  ),
+              ),
+          Positioned(
+              top: 80,
+              bottom: 0,
+              left: 0,
+              right: 0,
+              child: SingleChildScrollView(
+                  child: Stack(children: <Widget>[
+                Column(children: [
+                  SizedBox(
+                    width: double.infinity,
+                    child: DataTable(
+                      columns: const <DataColumn>[
+                        DataColumn(
+                          label: Text('Nuid'),
+                        ),
+                        DataColumn(
+                          label: Text('Name'),
+                        ),
+                        DataColumn(
+                          label: Text('Ruang'),
+                        ),
+                        DataColumn(
+                          label: Text('Pesan'),
+                        ),
+                        DataColumn(
+                          label: Text('Timestamp'),
+                        ),
+                      ],
+                      rows: List.generate(filteredData.length, (index) {
+                        final item = filteredData[index];
+                        return DataRow(
+                          cells: [
+                            DataCell(Text(item['nuid'].toString())),
+                            DataCell(Text(item['name'])),
+                            DataCell(Text(item['ruang'])),
+                            DataCell(Text(item['pesan'])),
+                            DataCell(Text(item['timestamp'])),
+                          ],
+                        );
+                      }),
+                    ),
+                  ),
+                ])
+              ]))),
+              
+        ]));
   }
 }

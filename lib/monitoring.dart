@@ -18,8 +18,17 @@ class MonitoringPage extends StatefulWidget {
 class MonitoringPageState extends State<MonitoringPage> {
   Timer? timer;
   late List<UserLocation>? userLocation;
+
+  @override
   void initState() {
     timer = Timer.periodic(Duration(milliseconds: 100), (Timer t) => updateValue());
+    super.initState();
+  }
+  
+  @override
+  void dispose() {
+    timer?.cancel();
+    super.dispose();
   }
 
   void updateValue() async{
@@ -45,7 +54,7 @@ class MonitoringPageState extends State<MonitoringPage> {
             Navigator.pop(context),            
           }
         ),
-        title: Text("Monitoring Karyawan"),
+        title: Text("Mapping Karyawan"),
       ),
       body: Center(
         child: ListView(
