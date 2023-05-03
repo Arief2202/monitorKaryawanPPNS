@@ -8,16 +8,14 @@ header("Access-Control-Allow-Origin: *");
 header('Content-Type: application/json; charset=utf-8');
 include "../koneksi.php";
 
-$sql = "SELECT nuid, name, username, email FROM user";
+$sql = "SELECT * FROM monitor_karyawan ORDER BY `timestamp` DESC";
 $result = mysqli_query($koneksi, $sql);
 $data;
-while($user = mysqli_fetch_object($result)){
-    $sql2 = "SELECT x,y,ruang,timestamp FROM `history_location` where nuid = ".$user->nuid." ORDER BY `timestamp` DESC limit 1;";
+while($monitor_karyawan = mysqli_fetch_object($result)){
+    $sql2 = "SELECT nuid, name, username, email FROM `user` where nuid = ".$monitor_karyawan->nuid;
     $result2 = mysqli_query($koneksi, $sql2);
-    if($result2){
-        $location = mysqli_fetch_object($result2);
-        $user->currentLocation = $location;
-    }
-    $data[] = $user;
+    $monitor_karyawan->user = mysqli_fetch_object($result2);
+    $monitor_karyawan->name = $monitor_karyawan->user->name;
+    $data[] = $monitor_karyawan;
 }
 echo json_encode($data);
