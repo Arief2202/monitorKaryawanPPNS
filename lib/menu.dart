@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:monitoring_karyawan_ppns/monitoring.dart';
 import 'package:monitoring_karyawan_ppns/absensi.dart';
+import 'package:monitoring_karyawan_ppns/history_presensi.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -100,6 +101,24 @@ class MenuState extends State<Menu> {
                     context,
                     MaterialPageRoute(builder: (context) {
                       return AbsensiPage();
+                    })
+                  );
+                },
+              ),
+            ),
+
+            Container(height: 20.0),//SizedBox(height: 20.0),        
+            
+            Container(
+              height: 50.0,
+              width: 300.0,
+              child: ElevatedButton(
+                child: new Text("History Presensi"),
+                onPressed: (){
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) {
+                      return HistoryPresensiPage();
                     })
                   );
                 },

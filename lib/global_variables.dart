@@ -5,6 +5,7 @@ library global;
 String endpoint = "http://absensi.ppns.eepis.tech";
 String endpoint_get_all = endpoint + "/location/get_all.php";
 String endpoint_monitor_karyawan_get_all = endpoint + "/monitor_karyawan/get_all.php";
+String endpoint_history_presensi_get_all = endpoint + "/history_presensi/get_all.php";
 
 String username = "admin";
 String password = "admin";
