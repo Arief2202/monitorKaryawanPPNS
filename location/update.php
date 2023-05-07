@@ -7,6 +7,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'GET') {
 header('Content-Type: application/json');
 header("Access-Control-Allow-Origin: *");
 header('Content-Type: application/json; charset=utf-8');
+date_default_timezone_set('Asia/Jakarta');
 include "../koneksi.php";
 if(isset($_POST['nuid']) && isset($_POST['x']) && isset($_POST['y']) && isset($_POST['ruang']) && isset($_POST['password'])){
     // if($_POST['ruang'] != )
@@ -64,7 +65,7 @@ if(isset($_POST['nuid']) && isset($_POST['x']) && isset($_POST['y']) && isset($_
                 echo json_encode([
                     "status" => true,
                     "nuid" => $_POST['nuid'],
-                    "message" => "Update Location Sucesfully",
+                    "message" => "Update Location Successfully",
                     "timestamp" => date("d M Y h:i:s", time()),
                 ]);
                 exit;
@@ -89,7 +90,87 @@ if(isset($_POST['nuid']) && isset($_POST['x']) && isset($_POST['y']) && isset($_
             exit;
         }
     }
-}      
+}
+else if(isset($_POST['nuid']) && isset($_POST['password']) && isset($_POST['aksi'])){    
+    if($_POST['aksi'] == "checkin" || $_POST['aksi'] == "checkout"){
+        $sql = "SELECT * FROM `user` WHERE nuid = ".$_POST['nuid'];
+        $result = mysqli_query($koneksi, $sql);
+        $user = mysqli_fetch_object($result);
+        if($user->password != $_POST['password']){            
+            echo json_encode([
+                "status" => false,
+                "nuid" => $_POST['nuid'],
+                "message" => "Action Failed, Wrong Password!",
+                "timestamp" => date("d M Y h:i:s", time()),
+            ]);
+            exit;
+        }
+        if($user){
+            $sql = "SELECT * FROM `history_presensi` WHERE nuid = ".$_POST['nuid']." AND timestamp >= '".date("Y-m-d", time())."' AND timestamp <= '".date("Y-m-d", time()+86400)."' AND aksi = '".$_POST['aksi']."'";
+            $result = mysqli_query($koneksi, $sql);
+            $data = mysqli_fetch_object($result);
+            if($data){
+                echo json_encode([
+                    "status" => false,
+                    "nuid" => $_POST['nuid'],
+                    "aksi" => $_POST['aksi'],
+                    "message" => $_POST['aksi'] == "checkin" ? "Check-in Failed, User has checked in today" : "Check-out Failed, User has checked out today",
+                    "timestamp" => date("d M Y h:i:s", time()),
+                ]);
+                exit;
+            }
+            else{
+                if($_POST['aksi'] == "checkout"){
+                    $sql = "SELECT * FROM `history_presensi` WHERE nuid = ".$_POST['nuid']." AND timestamp >= '".date("Y-m-d", time())."' AND timestamp <= '".date("Y-m-d", time()+86400)."' AND aksi = 'checkin'";
+                    $result = mysqli_query($koneksi, $sql);
+                    $data = mysqli_fetch_object($result);
+                    if(!$data){        
+                        echo json_encode([
+                            "status" => false,
+                            "nuid" => $_POST['nuid'],
+                            "aksi" => $_POST['aksi'],
+                            "message" => "Check-out Failed, This user has not checked-in yet!",
+                            "timestamp" => date("d M Y h:i:s", time()),
+                        ]);
+                        exit;
+                    }
+                }
+                if(!isset($_POST['pesan'])) $_POST['pesan'] = null;
+                $sql = "INSERT INTO `history_presensi` (`id`, `nuid`, `timestamp`, `aksi`, `pesan`) VALUES (NULL, '".$_POST['nuid']."', current_timestamp(), '".$_POST['aksi']."', '".$_POST['pesan']."');";
+                $result = mysqli_query($koneksi, $sql);
+                if($result){
+                    echo json_encode([
+                        "status" => true,
+                        "nuid" => $_POST['nuid'],
+                        "aksi" => $_POST['aksi'],
+                        "message" => $_POST['aksi'] == "checkin" ? "Check-in Successfully" : "Check-out Successfully",
+                        "timestamp" => date("d M Y h:i:s", time()),
+                    ]);
+                    exit;
+                }
+                else{                    
+                    echo json_encode([
+                        "status" => false,
+                        "nuid" => $_POST['nuid'],
+                        "aksi" => $_POST['aksi'],
+                        "message" => $_POST['aksi'] == "checkin" ? "Check-in Failed" : "Check-out Failed",
+                        "timestamp" => date("d M Y h:i:s", time()),
+                    ]);
+                    exit;
+                }
+            }
+        }
+    }
+    else{
+        echo json_encode([
+            "status" => false,
+            "nuid" => $_POST['nuid'],
+            "message" => "Command Action Failed, Incorrect Action!",
+            "timestamp" => date("d M Y h:i:s", time()),
+        ]);
+        exit;
+    }
+}
 echo json_encode([
     "status" => false,
     "nuid" => $_POST['nuid'],

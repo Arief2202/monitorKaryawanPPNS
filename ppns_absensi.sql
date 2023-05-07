@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost:3306
--- Generation Time: May 03, 2023 at 05:31 PM
+-- Generation Time: May 07, 2023 at 10:37 PM
 -- Server version: 10.6.12-MariaDB-0ubuntu0.22.04.1
 -- PHP Version: 8.2.3
 
@@ -34,6 +34,20 @@ CREATE TABLE `history_location` (
   `y` double NOT NULL,
   `ruang` varchar(255) NOT NULL,
   `timestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `history_presensi`
+--
+
+CREATE TABLE `history_presensi` (
+  `id` int(255) NOT NULL,
+  `nuid` int(255) NOT NULL,
+  `timestamp` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `aksi` varchar(255) NOT NULL,
+  `pesan` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -85,6 +99,12 @@ ALTER TABLE `history_location`
   ADD KEY `FOREIGN` (`nuid`) USING BTREE;
 
 --
+-- Indexes for table `history_presensi`
+--
+ALTER TABLE `history_presensi`
+  ADD PRIMARY KEY (`id`);
+
+--
 -- Indexes for table `monitor_karyawan`
 --
 ALTER TABLE `monitor_karyawan`
@@ -105,6 +125,12 @@ ALTER TABLE `user`
 -- AUTO_INCREMENT for table `history_location`
 --
 ALTER TABLE `history_location`
+  MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `history_presensi`
+--
+ALTER TABLE `history_presensi`
   MODIFY `id` int(255) NOT NULL AUTO_INCREMENT;
 
 --
