@@ -133,11 +133,11 @@ class HistoryPresensiPageState extends State<HistoryPresensiPage> {
                         final item = filteredData[index];
                         return DataRow(
                           cells: [
-                            DataCell(Text(item['nuid'].toString())),
-                            DataCell(Text(item['name'])),
-                            DataCell(Text(item['aksi'])),
-                            DataCell(Text(item['pesan'])),
-                            DataCell(Text(item['timestamp'])),
+                            DataCell(Text(item['nuid'].toString(), style: TextStyle(color: item['color'] == 'red' ? Colors.red : Colors.black))),
+                            DataCell(Text(item['name'], style: TextStyle(color: item['color'] == 'red' ? Colors.red : Colors.black))),
+                            DataCell(Text(item['aksi'], style: TextStyle(color: item['color'] == 'red' ? Colors.red : Colors.black))),
+                            DataCell(Text(item['pesan'], style: TextStyle(color: item['color'] == 'red' ? Colors.red : Colors.black))),
+                            DataCell(Text(item['timestamp'], style: TextStyle(color: item['color'] == 'red' ? Colors.red : Colors.black))),
                           ],
                         );
                       }),
