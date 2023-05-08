@@ -120,6 +120,7 @@ else if(isset($_POST['nuid']) && isset($_POST['password']) && isset($_POST['aksi
                 exit;
             }
             else{
+                $color = "black";
                 if($_POST['aksi'] == "checkout"){
                     $sql = "SELECT * FROM `history_presensi` WHERE nuid = ".$_POST['nuid']." AND timestamp >= '".date("Y-m-d", time())."' AND timestamp <= '".date("Y-m-d", time()+86400)."' AND aksi = 'checkin'";
                     $result = mysqli_query($koneksi, $sql);
@@ -134,9 +135,13 @@ else if(isset($_POST['nuid']) && isset($_POST['password']) && isset($_POST['aksi
                         ]);
                         exit;
                     }
+                    if(((int) date('H', time())) < 15 && ((int) date('i', time())) < 59 && ($_POST['pesan'] == null || $_POST['pesan'] == "")) $color = "red";
+                }
+                else{
+                    if(((int) date('H', time())) >= 8 && ($_POST['pesan'] == null || $_POST['pesan'] == "")) $color = "red";
                 }
                 if(!isset($_POST['pesan'])) $_POST['pesan'] = null;
-                $sql = "INSERT INTO `history_presensi` (`id`, `nuid`, `timestamp`, `aksi`, `pesan`) VALUES (NULL, '".$_POST['nuid']."', current_timestamp(), '".$_POST['aksi']."', '".$_POST['pesan']."');";
+                $sql = "INSERT INTO `history_presensi` (`id`, `nuid`, `timestamp`, `aksi`, `pesan`, `color`) VALUES (NULL, '".$_POST['nuid']."', current_timestamp(), '".$_POST['aksi']."', '".$_POST['pesan']."', '".$color."');";
                 $result = mysqli_query($koneksi, $sql);
                 if($result){
                     echo json_encode([
