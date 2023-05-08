@@ -135,7 +135,7 @@ else if(isset($_POST['nuid']) && isset($_POST['password']) && isset($_POST['aksi
                         ]);
                         exit;
                     }
-                    if(((int) date('H', time())) < 15 && ((int) date('i', time())) < 59 && ($_POST['pesan'] == null || $_POST['pesan'] == "")) $color = "red";
+                    if(((int) date('H', time())) <= 16 && ((int) date('i', time())) < 59 && ($_POST['pesan'] == null || $_POST['pesan'] == "")) $color = "red";
                 }
                 else{
                     if(((int) date('H', time())) >= 8 && ($_POST['pesan'] == null || $_POST['pesan'] == "")) $color = "red";
