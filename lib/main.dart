@@ -3,6 +3,9 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:monitoring_karyawan_ppns/loginPage.dart';
+import 'package:monitoring_karyawan_ppns/listKaryawan.dart';
+import 'package:monitoring_karyawan_ppns/absensi.dart';
+import 'package:monitoring_karyawan_ppns/history_presensi.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:loader_overlay/loader_overlay.dart';
@@ -11,7 +14,6 @@ import 'package:monitoring_karyawan_ppns/menu.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' show jsonDecode;
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-
 
 void main() {
   runApp(
@@ -64,14 +66,12 @@ class _MyHomePageState extends State<MyHomePage> {
         globals.loadingAutologin = true;
       });
       context.loaderOverlay.show();
-      
-      if (username == globals.username && password == globals.password) {
 
+      if (username == globals.username && password == globals.password) {
         setState(() {
           globals.isLoggedIn = true;
         });
-      } 
-      else {
+      } else {
         await prefs.remove('username');
         await prefs.remove('password');
         setState(() {

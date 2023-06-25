@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:monitoring_karyawan_ppns/monitoring.dart';
 import 'package:monitoring_karyawan_ppns/absensi.dart';
 import 'package:monitoring_karyawan_ppns/history_presensi.dart';
+import 'package:monitoring_karyawan_ppns/listKaryawan.dart';
 import 'package:flutter_phoenix/flutter_phoenix.dart';
 import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,14 +17,13 @@ class Menu extends StatefulWidget {
   State<Menu> createState() => MenuState();
 }
 
-
 class MenuState extends State<Menu> {
   void initState() {
     super.initState();
   }
 
   Widget build(BuildContext context) {
-    double mapWidth = MediaQuery.of(context).size.width/1.2;
+    double mapWidth = MediaQuery.of(context).size.width / 1.2;
     return Scaffold(
       appBar: AppBar(
         // leading: IconButton(
@@ -64,68 +64,72 @@ class MenuState extends State<Menu> {
                         })
                   ],
                 ).show();
-
               })
         ],
       ),
       body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: <Widget>[
-          
-            Container(
-              height: 50.0,
-              width: 300.0,
-              child: ElevatedButton(
-                child: new Text("Mapping Karyawan"),
-                onPressed: (){
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) {
-                      return MonitoringPage();
-                    })
-                  );
-                },
-              ),
+        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: <Widget>[
+          Container(
+            height: 50.0,
+            width: 300.0,
+            child: ElevatedButton(
+              child: new Text("Mapping Karyawan"),
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return MonitoringPage();
+                }));
+              },
             ),
-            
-            Container(height: 20.0),//SizedBox(height: 20.0),        
-            
-            Container(
-              height: 50.0,
-              width: 300.0,
-              child: ElevatedButton(
-                child: new Text("History Lokasi"),
-                onPressed: (){
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) {
-                      return AbsensiPage();
-                    })
-                  );
-                },
-              ),
-            ),
+          ),
 
-            Container(height: 20.0),//SizedBox(height: 20.0),        
-            
-            Container(
-              height: 50.0,
-              width: 300.0,
-              child: ElevatedButton(
-                child: new Text("History Presensi"),
-                onPressed: (){
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) {
-                      return HistoryPresensiPage();
-                    })
-                  );
-                },
-              ),
+          Container(height: 20.0), //SizedBox(height: 20.0),
+
+          Container(
+            height: 50.0,
+            width: 300.0,
+            child: ElevatedButton(
+              child: new Text("List Karyawan"),
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return ListKaryawan();
+                }));
+              },
             ),
-          ],
-        ),
-      );
+          ),
+
+          // Container(height: 20.0), //SizedBox(height: 20.0),
+
+          // Container(
+          //   height: 50.0,
+          //   width: 300.0,
+          //   child: ElevatedButton(
+          //     child: new Text("History Lokasi"),
+          //     onPressed: () {
+          //       Navigator.push(context, MaterialPageRoute(builder: (context) {
+          //         return AbsensiPage(id: 1);
+          //       }));
+          //     },
+          //   ),
+          // ),
+
+          // Container(height: 20.0), //SizedBox(height: 20.0),
+
+          // Container(
+          //   height: 50.0,
+          //   width: 300.0,
+          //   child: ElevatedButton(
+          //     child: new Text("History Presensi"),
+          //     onPressed: () {
+          //       Navigator.push(context, MaterialPageRoute(builder: (context) {
+          //         return HistoryPresensiPage();
+          //       }));
+          //     },
+          //   ),
+          // ),
+        ],
+      ),
+    );
   }
 }

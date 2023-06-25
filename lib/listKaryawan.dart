@@ -2,21 +2,22 @@
 
 import 'package:flutter/material.dart';
 import 'package:monitoring_karyawan_ppns/global_variables.dart' as global;
+import 'package:monitoring_karyawan_ppns/absensi.dart';
+import 'package:monitoring_karyawan_ppns/history_presensi.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' show jsonDecode;
 import 'dart:async';
 import 'package:horizontal_data_table/horizontal_data_table.dart';
 import 'dart:developer';
 
-class AbsensiPage extends StatefulWidget {
-  int id;
-  AbsensiPage({super.key, required this.id});
+class ListKaryawan extends StatefulWidget {
+  const ListKaryawan({super.key});
 
   @override
-  State<AbsensiPage> createState() => AbsensiPageState(id: id);
+  State<ListKaryawan> createState() => ListKaryawanState();
 }
 
-class AbsensiPageState extends State<AbsensiPage> {
+class ListKaryawanState extends State<ListKaryawan> {
   // List<dynamic> data = [
   //   {"Nuid": 1, "Name": "Test", "Ruang": "M102", "Pesan": "Keluar M102", "Timestamp": "2023-04-13 03:02:24"},
   //   {"Nuid": 2, "Name": "Test", "Ruang": "M102", "Pesan": "Keluar M102", "Timestamp": "2023-04-13 03:02:24"},
@@ -25,8 +26,6 @@ class AbsensiPageState extends State<AbsensiPage> {
   //   {"Nuid": 1, "Name": "Test", "Ruang": "-", "Pesan": "Keluar M102", "Timestamp": "2023-04-13 03:02:24"},
   //   {"Nuid": 1, "Name": "Test", "Ruang": "M102", "Pesan": "Keluar M102", "Timestamp": "2023-04-13 03:02:24"},
   // ];
-  int id;
-  AbsensiPageState({required this.id});
 
   late List<dynamic>? data;
   List<dynamic> filteredData = [];
@@ -49,12 +48,11 @@ class AbsensiPageState extends State<AbsensiPage> {
   }
 
   void updateValue() async {
-    var url = Uri.parse(global.endpoint_monitor_karyawan_get_all);
+    var url = Uri.parse(global.endpoint_list_karyawan_get_all);
     var response = await http.get(url);
     if (response.statusCode == 200) {
       setState(() {
         data = List<dynamic>.from((jsonDecode(response.body) as List));
-        data = data!.where((item) => item['nuid'].toString().toLowerCase().contains(id.toString())).toList();
         filteredData = searchController.text.isEmpty ? data! : data!.where((item) => item['name'].toLowerCase().contains(searchController.text.toLowerCase()) || item['ruang'].toLowerCase().contains(searchController.text.toLowerCase()) || item['pesan'].toLowerCase().contains(searchController.text.toLowerCase()) || item['timestamp'].toLowerCase().contains(searchController.text.toLowerCase())).toList();
       });
     }
@@ -77,7 +75,7 @@ class AbsensiPageState extends State<AbsensiPage> {
                     timer?.cancel(),
                     Navigator.pop(context),
                   }),
-          title: Text("History Lokasi"),
+          title: Text("List Karyawan"),
         ),
         body: Stack(children: <Widget>[
           Positioned(
@@ -116,13 +114,16 @@ class AbsensiPageState extends State<AbsensiPage> {
                           label: Text('Name'),
                         ),
                         DataColumn(
-                          label: Text('Ruang'),
+                          label: Text('Username'),
                         ),
                         DataColumn(
-                          label: Text('Pesan'),
+                          label: Text('Email'),
                         ),
                         DataColumn(
-                          label: Text('Timestamp'),
+                          label: Text('Absensi'),
+                        ),
+                        DataColumn(
+                          label: Text('Jejak Lokasi'),
                         ),
                       ],
                       rows: List.generate(filteredData.length, (index) {
@@ -131,9 +132,36 @@ class AbsensiPageState extends State<AbsensiPage> {
                           cells: [
                             DataCell(Text(item['nuid'].toString())),
                             DataCell(Text(item['name'])),
-                            DataCell(Text(item['ruang'])),
-                            DataCell(Text(item['pesan'])),
-                            DataCell(Text(item['timestamp'])),
+                            DataCell(Text(item['username'])),
+                            DataCell(Text(item['email'])),
+                            DataCell(
+                              Container(
+                                height: 30.0,
+                                width: 100.0,
+                                child: ElevatedButton(
+                                  child: new Text("Absensi"),
+                                  onPressed: () {
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                      return HistoryPresensiPage(id: int.parse(item['nuid']));
+                                    }));
+                                  },
+                                ),
+                              ),
+                            ),
+                            DataCell(
+                              Container(
+                                height: 30.0,
+                                width: 140.0,
+                                child: ElevatedButton(
+                                  child: new Text("History Lokasi"),
+                                  onPressed: () {
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                      return AbsensiPage(id: int.parse(item['nuid']));
+                                    }));
+                                  },
+                                ),
+                              ),
+                            ),
                           ],
                         );
                       }),

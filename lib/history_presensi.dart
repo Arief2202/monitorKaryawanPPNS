@@ -9,14 +9,16 @@ import 'package:horizontal_data_table/horizontal_data_table.dart';
 import 'dart:developer';
 
 class HistoryPresensiPage extends StatefulWidget {
-  const HistoryPresensiPage({super.key});
+  int id;
+  HistoryPresensiPage({super.key, required this.id});
 
   @override
-  State<HistoryPresensiPage> createState() => HistoryPresensiPageState();
+  State<HistoryPresensiPage> createState() => HistoryPresensiPageState(id: id);
 }
 
 class HistoryPresensiPageState extends State<HistoryPresensiPage> {
-
+  int id;
+  HistoryPresensiPageState({required this.id});
   late List<dynamic>? data;
   List<dynamic> filteredData = [];
   final searchController = TextEditingController();
@@ -40,33 +42,18 @@ class HistoryPresensiPageState extends State<HistoryPresensiPage> {
   void updateValue() async {
     var url = Uri.parse(global.endpoint_history_presensi_get_all);
     var response = await http.get(url);
-    if (response.statusCode == 200) {  
+    if (response.statusCode == 200) {
       setState(() {
         data = List<dynamic>.from((jsonDecode(response.body) as List));
-        filteredData = searchController.text.isEmpty
-            ? data!
-            : data!
-                .where((item) =>
-                    item['name'].toLowerCase().contains(searchController.text.toLowerCase()) ||
-                    item['aksi'].toLowerCase().contains(searchController.text.toLowerCase()) ||
-                    item['pesan'].toLowerCase().contains(searchController.text.toLowerCase()) ||
-                    item['timestamp'].toLowerCase().contains(searchController.text.toLowerCase()))
-                .toList();
+        data = data!.where((item) => item['nuid'].toString().toLowerCase().contains(id.toString())).toList();
+        filteredData = searchController.text.isEmpty ? data! : data!.where((item) => item['name'].toLowerCase().contains(searchController.text.toLowerCase()) || item['aksi'].toLowerCase().contains(searchController.text.toLowerCase()) || item['pesan'].toLowerCase().contains(searchController.text.toLowerCase()) || item['timestamp'].toLowerCase().contains(searchController.text.toLowerCase())).toList();
       });
     }
   }
 
   void _onSearchTextChanged(String text) {
     setState(() {
-      filteredData = text.isEmpty
-          ? data!
-          : data!
-                .where((item) =>
-                    item['name'].toLowerCase().contains(searchController.text.toLowerCase()) ||
-                    item['aksi'].toLowerCase().contains(searchController.text.toLowerCase()) ||
-                    item['pesan'].toLowerCase().contains(searchController.text.toLowerCase()) ||
-                    item['timestamp'].toLowerCase().contains(searchController.text.toLowerCase()))
-                .toList();
+      filteredData = text.isEmpty ? data! : data!.where((item) => item['name'].toLowerCase().contains(searchController.text.toLowerCase()) || item['aksi'].toLowerCase().contains(searchController.text.toLowerCase()) || item['pesan'].toLowerCase().contains(searchController.text.toLowerCase()) || item['timestamp'].toLowerCase().contains(searchController.text.toLowerCase())).toList();
     });
   }
 
@@ -85,22 +72,22 @@ class HistoryPresensiPageState extends State<HistoryPresensiPage> {
         ),
         body: Stack(children: <Widget>[
           Positioned(
-                top: 0,
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextField(
-                      controller: searchController,
-                      decoration: const InputDecoration(
-                        hintText: 'Search...',
-                        border: OutlineInputBorder(),
-                      ),
-                      onChanged: _onSearchTextChanged,
-                    ),
-                  ),
+            top: 0,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                controller: searchController,
+                decoration: const InputDecoration(
+                  hintText: 'Search...',
+                  border: OutlineInputBorder(),
+                ),
+                onChanged: _onSearchTextChanged,
               ),
+            ),
+          ),
           Positioned(
               top: 80,
               bottom: 0,
@@ -145,7 +132,6 @@ class HistoryPresensiPageState extends State<HistoryPresensiPage> {
                   ),
                 ])
               ]))),
-              
         ]));
   }
 }

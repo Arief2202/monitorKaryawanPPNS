@@ -14,7 +14,6 @@ class MonitoringPage extends StatefulWidget {
   State<MonitoringPage> createState() => MonitoringPageState();
 }
 
-
 class MonitoringPageState extends State<MonitoringPage> {
   Timer? timer;
   late List<UserLocation>? userLocation;
@@ -24,65 +23,61 @@ class MonitoringPageState extends State<MonitoringPage> {
     timer = Timer.periodic(Duration(milliseconds: 100), (Timer t) => updateValue());
     super.initState();
   }
-  
+
   @override
   void dispose() {
     timer?.cancel();
     super.dispose();
   }
 
-  void updateValue() async{
+  void updateValue() async {
     var url = Uri.parse(global.endpoint_get_all);
     var response = await http.get(url);
     if (response.statusCode == 200) {
-        debugPrint(jsonDecode(response.body).toString());
-        setState(() {          
-          userLocation = List<UserLocation>.from((jsonDecode(response.body) as List).map((x) => UserLocation.fromJson(x)).where((content) => content.nuid != null)); 
-        });
+      debugPrint(jsonDecode(response.body).toString());
+      setState(() {
+        userLocation = List<UserLocation>.from((jsonDecode(response.body) as List).map((x) => UserLocation.fromJson(x)).where((content) => content.nuid != null));
+      });
     }
   }
 
   Widget build(BuildContext context) {
-    double mapWidth = MediaQuery.of(context).size.width/1.2;
+    double mapWidth = MediaQuery.of(context).size.width / 1.2;
 
     return Scaffold(
       appBar: AppBar(
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
-          onPressed: () => {
-            timer?.cancel(),
-            Navigator.pop(context),            
-          }
-        ),
+            icon: Icon(Icons.arrow_back),
+            onPressed: () => {
+                  timer?.cancel(),
+                  Navigator.pop(context),
+                }),
         title: Text("Mapping Karyawan"),
       ),
       body: Center(
         child: ListView(
           scrollDirection: Axis.vertical,
           // mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[    
-              SizedBox(height: 50),
-
-              Center(child: Stack(
-                // fit: StackFit.expand,
-                children: <Widget>[
-                  Image.asset(width: mapWidth,'img/m1.png'),
-                  // printDots(userLocation, 1, mapWidth),
-                  for (UserLocation user in userLocation!) dots(user.nuid, user.currentLocation.x, user.currentLocation.y, user.currentLocation.ruang, mapWidth),
-                  
-                ]
-              )),
-              SizedBox(height: 50),
-
-              // Center(child: Stack(
-              //   // fit: StackFit.expand,
-              //   children: <Widget>[
-              //     Image.asset(width: mapWidth,'img/m2.png'),
-              //     // dots("1", 0, 0, "M102", mapWidth),
-              //   ]
-              // )),
-              // SizedBox(height: 50),
-              
+          children: <Widget>[
+            SizedBox(height: 50),
+            Center(
+                child: Stack(
+                    // fit: StackFit.expand,
+                    children: <Widget>[
+                  // Image.asset(width: mapWidth, 'img/m1.png'),
+                  Image.asset(width: mapWidth, 'img/mp1.png'),
+                  for (UserLocation user in userLocation!) user.currentLocation.ruang[1] == '1' || user.currentLocation.ruang == "parkiran" ? dots(user.nuid, user.currentLocation.x, user.currentLocation.y, user.currentLocation.ruang, mapWidth) : SizedBox(),
+                ])),
+            // SizedBox(height: 10),
+            // Center(
+            //     child: Stack(
+            //         // fit: StackFit.expand,
+            //         children: <Widget>[
+            //       Image.asset(width: mapWidth, 'img/m2.png'),
+            //       // printDots(userLocation, 1, mapWidth),
+            //       for (UserLocation user in userLocation!) user.currentLocation.ruang[1] == '2' ? dots(user.nuid, user.currentLocation.x, user.currentLocation.y, user.currentLocation.ruang, mapWidth) : SizedBox(),
+            //     ])),
+            SizedBox(height: 50),
           ],
         ),
       ),
@@ -101,56 +96,52 @@ class MonitoringPageState extends State<MonitoringPage> {
 //                 ];
 // }
 
-Widget dots(String nuid, String xStr, String yStr, String ruang, double width){
+Widget dots(String nuid, String xStr, String yStr, String ruang, double width) {
   double x = double.parse(xStr);
   double y = double.parse(yStr);
-  int plusX = (width/(380/70)).toInt();
-  int plusY = (width/(380/96)).toInt();
+  // int totalWidth = 310; //map tanpa parkir
+  int totalWidth = 610; //map dengan parkir
+  int plusX = 0;
+  int plusY = (width / (totalWidth / 96)).toInt();
   double scaleCircle = 35;
   double scaleText = 45;
-  if(ruang == "M102" || ruang == "M203"){
-
+  if (ruang == "parkiran") {
+    plusX = (width / (totalWidth / 310)).toInt();
+    plusY = (width / (totalWidth / 84)).toInt();
   }
-  if(ruang == "M103" || ruang == "M204"){
-    plusX = (width/(380/146)).toInt();
-  }
-  else if(ruang == "M104" || ruang == "M205") plusX = (width/(380/228)).toInt(); 
+  if (ruang == "M103" || ruang == "M203") {
+    plusX = (width / (totalWidth / 76)).toInt();
+  } else if (ruang == "M104" || ruang == "M204") plusX = (width / (totalWidth / 158)).toInt();
   return Positioned(
-      left: ((width/(380/x)+plusX))-((width/scaleCircle)/2),
-      top: ((width/(380/y)+plusY))-((width/scaleCircle)/2),
-      width: width/scaleCircle,
-      height: width/scaleCircle,
-      child: CircleAvatar(
-          backgroundColor: Color.fromARGB(200, 255, 0, 0),
-          child: Text(nuid, style: TextStyle(fontSize: width/scaleText)),
-          foregroundImage: NetworkImage("enterImageUrl"),
-      ),
-    );
+    left: ((width / (totalWidth / x) + plusX)) - ((width / scaleCircle) / 2),
+    top: ((width / (totalWidth / y) + plusY)) - ((width / scaleCircle) / 2),
+    width: width / scaleCircle,
+    height: width / scaleCircle,
+    child: CircleAvatar(
+      backgroundColor: Color.fromARGB(200, 255, 0, 0),
+      child: Text(nuid, style: TextStyle(fontSize: width / scaleText)),
+      foregroundImage: NetworkImage("enterImageUrl"),
+    ),
+  );
 }
 
-class UserLocation{
+class UserLocation {
   String nuid;
   String name;
   String username;
   String email;
   Location currentLocation;
-  UserLocation({
-    required this.nuid,
-    required this.name,
-    required this.username,
-    required this.email,
-    required this.currentLocation
-  });
+  UserLocation({required this.nuid, required this.name, required this.username, required this.email, required this.currentLocation});
   factory UserLocation.fromJson(Map<String, dynamic> json) => UserLocation(
-    nuid: json['nuid'],
-    name: json['name'],
-    username: json['username'],
-    email: json['email'],
-    currentLocation: Location.fromJson(json['currentLocation']),
-  );
+        nuid: json['nuid'],
+        name: json['name'],
+        username: json['username'],
+        email: json['email'],
+        currentLocation: Location.fromJson(json['currentLocation']),
+      );
 }
 
-class Location{
+class Location {
   String x;
   String y;
   String ruang;
@@ -162,9 +153,9 @@ class Location{
     required this.timestamp,
   });
   factory Location.fromJson(Map<String, dynamic> json) => Location(
-    x: json['x'],
-    y: json['y'],
-    ruang: json['ruang'],
-    timestamp: json['timestamp'],
-  );
+        x: json['x'],
+        y: json['y'],
+        ruang: json['ruang'],
+        timestamp: json['timestamp'],
+      );
 }
