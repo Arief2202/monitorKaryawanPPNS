@@ -1,11 +1,14 @@
-// ignore_for_file: curly_braces_in_flow_control_structures, prefer_const_constructors, sort_child_properties_last, unused_local_variable
+// ignore_for_file: curly_braces_in_flow_control_structures, prefer_const_constructors, sort_child_properties_last, unused_local_variable, unnecessary_null_comparison
 
 import 'package:flutter/material.dart';
 import 'package:monitoring_karyawan_ppns/global_variables.dart' as global;
+import 'package:rflutter_alert/rflutter_alert.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert' show jsonDecode;
 import 'dart:async';
-import 'dart:developer';
+import 'package:intl/intl.dart';
+import 'package:monitoring_karyawan_ppns/absensi.dart';
+import 'package:monitoring_karyawan_ppns/history_presensi.dart';
 
 class MonitoringPage extends StatefulWidget {
   const MonitoringPage({super.key});
@@ -21,6 +24,9 @@ class MonitoringPageState extends State<MonitoringPage> {
   @override
   void initState() {
     timer = Timer.periodic(Duration(milliseconds: 100), (Timer t) => updateValue());
+    userLocation = [
+      UserLocation(nuid: "", email: "", name: "", username: "", currentLocation:Location(x: "0", y: "0", ruang: "", timestamp: "") ),
+    ];
     super.initState();
   }
 
@@ -66,7 +72,7 @@ class MonitoringPageState extends State<MonitoringPage> {
                     children: <Widget>[
                   // Image.asset(width: mapWidth, 'img/m1.png'),
                   Image.asset(width: mapWidth, 'img/mp1.png'),
-                  for (UserLocation user in userLocation!) user.currentLocation.ruang[1] == '1' || user.currentLocation.ruang == "parkiran" ? dots(user.nuid, user.currentLocation.x, user.currentLocation.y, user.currentLocation.ruang, mapWidth) : SizedBox(),
+                  for (UserLocation user in userLocation!) user.currentLocation.ruang[1] == '1' || user.currentLocation.ruang == "parkiran" ? dots(user, user.currentLocation.x, user.currentLocation.y, user.currentLocation.ruang, mapWidth, context) : SizedBox(),
                 ])),
             // SizedBox(height: 10),
             // Center(
@@ -96,15 +102,16 @@ class MonitoringPageState extends State<MonitoringPage> {
 //                 ];
 // }
 
-Widget dots(String nuid, String xStr, String yStr, String ruang, double width) {
+Widget dots(UserLocation user, String xStr, String yStr, String ruang, double width, BuildContext context) {
+  var f = NumberFormat("###0.0#", "en_US");
   double x = double.parse(xStr);
   double y = double.parse(yStr);
   // int totalWidth = 310; //map tanpa parkir
   int totalWidth = 610; //map dengan parkir
   int plusX = 0;
   int plusY = (width / (totalWidth / 96)).toInt();
-  double scaleCircle = 35;
-  double scaleText = 45;
+  double scaleCircle = 65;
+  double scaleText = 75;
   if (ruang == "parkiran") {
     plusX = (width / (totalWidth / 310)).toInt();
     plusY = (width / (totalWidth / 84)).toInt();
@@ -117,10 +124,48 @@ Widget dots(String nuid, String xStr, String yStr, String ruang, double width) {
     top: ((width / (totalWidth / y) + plusY)) - ((width / scaleCircle) / 2),
     width: width / scaleCircle,
     height: width / scaleCircle,
-    child: CircleAvatar(
-      backgroundColor: Color.fromARGB(200, 255, 0, 0),
-      child: Text(nuid, style: TextStyle(fontSize: width / scaleText)),
-      foregroundImage: NetworkImage("enterImageUrl"),
+    child: GestureDetector(
+      onTap: () {
+        Alert(
+          context: context,
+          desc: "NUID :\n${user.nuid}\n\nName :\n${user.name}\n\nUsername :\n${user.username}\n\nEmail :\n${user.email}\n\nLokasi (${user.currentLocation.ruang})\nX : ${f.format(double.parse(user.currentLocation.x))}\nY : ${f.format(double.parse(user.currentLocation.y))}",
+          buttons: [
+            DialogButton(
+              child: Text(
+                "History Lokasi",
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return AbsensiPage(id: int.parse(user.nuid));
+                }));
+              },
+              color: Color.fromRGBO(0, 179, 134, 1.0),
+            ),
+            DialogButton(
+              child: Text(
+                "History Absensi",
+                style: TextStyle(color: Colors.white, fontSize: 20),
+              ),
+              onPressed: () {
+                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                  return HistoryPresensiPage(id: int.parse(user.nuid));
+                }));
+              },
+              color: Color.fromRGBO(0, 179, 134, 1.0),
+            ),
+          ],
+          style: AlertStyle(
+            descStyle: TextStyle(fontSize: 15),
+            descTextAlign: TextAlign.center,
+          )
+        ).show();
+      },
+      child:  CircleAvatar(
+        backgroundColor: Color.fromARGB(200, 255, 0, 0),
+        child: Text(user.nuid, style: TextStyle(fontSize: width / scaleText)),
+        foregroundImage: NetworkImage("enterImageUrl"),
+      )
     ),
   );
 }

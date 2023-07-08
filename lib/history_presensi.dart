@@ -1,4 +1,4 @@
-// ignore_for_file: curly_braces_in_flow_control_structures, prefer_const_constructors, sort_child_properties_last, unused_local_variable, prefer_const_literals_to_create_immutables
+// ignore_for_file: curly_braces_in_flow_control_structures, prefer_const_constructors, sort_child_properties_last, unused_local_variable, prefer_const_literals_to_create_immutables, unused_import, must_be_immutable
 
 import 'package:flutter/material.dart';
 import 'package:monitoring_karyawan_ppns/global_variables.dart' as global;
@@ -18,15 +18,33 @@ class HistoryPresensiPage extends StatefulWidget {
 }
 
 class HistoryPresensiPageState extends State<HistoryPresensiPage> {
+  List<String> month = [
+    "January",
+    "February",
+    "March",
+    "April",
+    "May",
+    "June",
+    "July",
+    "August",
+    "September",
+    "October",
+    "November",
+    "December",
+  ];
   int id;
+  bool first = true;
   HistoryPresensiPageState({required this.id});
   late List<dynamic>? data;
+  late List<dynamic>? dataUser;
   List<dynamic>? filteredDataTgl = [];
   List<dynamic>? filteredDataSearch = [];
   final searchController = TextEditingController();
   final searchTglController = TextEditingController();
-
+  DateTime current_date = DateTime.now();
   Timer? timer;
+  Timer? timer2;
+  final formatter = new NumberFormat('00');
   // late List<UserLocation>? userLocation;
 
   @override
@@ -53,6 +71,23 @@ class HistoryPresensiPageState extends State<HistoryPresensiPage> {
         filteredDataSearch = searchController.text.isEmpty ? filteredDataTgl! : filteredDataTgl!.where((item) => item['name'].toLowerCase().contains(searchController.text.toLowerCase()) || item['aksi'].toLowerCase().contains(searchController.text.toLowerCase()) || item['pesan'].toLowerCase().contains(searchController.text.toLowerCase()) || item['timestamp'].toLowerCase().contains(searchController.text.toLowerCase())).toList();
       });
     }
+    var url2 = Uri.parse(global.endpoint_list_karyawan_get_all);
+    var response2 = await http.get(url2);
+    if (response2.statusCode == 200) {
+      setState(() {
+        dataUser = List<dynamic>.from((jsonDecode(response2.body) as List));        
+        dataUser = dataUser!.where((item) => item['nuid'].toString().toLowerCase().contains(id.toString())).toList();
+      });
+    }
+    if(first){      
+      String formattedDate = DateFormat('yyyy-MM-dd').format(current_date);
+      setState(() {
+        searchTglController.text = formattedDate; //set output date to TextField value.
+        filteredDataTgl = data!.where((item) => item['timestamp'].toString().toLowerCase().contains(searchTglController.text)).toList();
+        filteredDataSearch = filteredDataTgl;
+        first = false;
+      });
+    }
   }
 
   void _onSearchTextChanged(String text) {
@@ -75,8 +110,42 @@ class HistoryPresensiPageState extends State<HistoryPresensiPage> {
           title: Text("History Presensi"),
         ),
         body: Stack(children: <Widget>[
+          
           Positioned(
-            top: 0,
+            top: 20,
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child:  Column(
+              children: [
+                dataUser![0]['foto'] == null ? 
+                CircleAvatar(
+                  radius:70,
+                  backgroundImage: AssetImage('img/default-profile.jpg'),
+                ) :
+                 CircleAvatar(
+                  radius:70,
+                  backgroundImage: NetworkImage(dataUser![0]['foto']),
+                ),
+                Container(height: 10),
+                Text(dataUser![0]['name'],
+                  style: TextStyle(
+                    fontSize: 30,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                Container(height: 10),
+                Text("${DateFormat('EEEE').format(current_date)}, ${formatter.format(current_date.day)} ${month[current_date.month-1]} ${current_date.year}",
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: Color.fromARGB(150, 0, 0, 0),
+                  ),
+                ),
+              ]
+            )
+          ),
+          Positioned(
+            top: 250,
             bottom: 0,
             left: 0,
             right: 0,
@@ -89,7 +158,7 @@ class HistoryPresensiPageState extends State<HistoryPresensiPage> {
               //editing controller of this TextField
               decoration: InputDecoration(
                   icon: Icon(Icons.calendar_today), //icon of text field
-                  labelText: "Enter Date" //label text of field
+                  labelText: "Select Date" //label text of field
                   ),
               readOnly: true,
               //set it true, so that user will not able to edit text
@@ -117,7 +186,7 @@ class HistoryPresensiPageState extends State<HistoryPresensiPage> {
             ),
           ),
           Positioned(
-            top: 80,
+            top: 330,
             bottom: 0,
             left: 0,
             right: 0,
@@ -134,7 +203,7 @@ class HistoryPresensiPageState extends State<HistoryPresensiPage> {
             ),
           ),
           Positioned(
-              top: 160,
+              top: 410,
               bottom: 0,
               left: 0,
               right: 0,
