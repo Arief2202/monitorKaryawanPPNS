@@ -10,7 +10,7 @@ do
   if (( $x >= 72 || $y >= 88)); then
     break
   fi 
-  msg=`mosquitto_pub -h eepis.tech -t tx -m 'nuid=2&password=vicky&x='$x'&y='$y'&ruang=M103'`
+  msg=`mosquitto_pub -h eepis.tech -t tx -m 'nuid=2&password=a&x='$x'&y='$y'&ruang=M103'`
   echo $x' '$y;
   sleep .5;
 done

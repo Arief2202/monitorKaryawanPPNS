@@ -20,6 +20,18 @@ if(isset($_POST['nuid'])){
     }
     echo json_encode($user);
 }
+else if(isset($_POST['username'])){
+    $sql = "SELECT * FROM user WHERE username='".$_POST['username']."'";
+    $result = mysqli_query($koneksi, $sql);
+    $user = mysqli_fetch_object($result);
+    $sql2 = "SELECT x,y,ruang,timestamp FROM `history_location` where nuid = ".$user->nuid." ORDER BY `timestamp` DESC limit 1;";
+    $result2 = mysqli_query($koneksi, $sql2);
+    if($result2){
+        $location = mysqli_fetch_object($result2);
+        $user->currentLocation = $location;
+    }
+    echo json_encode($user);
+}
 else if(isset($_POST['ruang'])){
     $sql = "SELECT * FROM user";
     $result = mysqli_query($koneksi, $sql);

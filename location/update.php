@@ -166,10 +166,39 @@ else if(isset($_POST['nuid']) && isset($_POST['password']) && isset($_POST['aksi
             }
         }
     }
+    else if($_POST['aksi'] == "check"){
+        $sql = "SELECT * FROM `user` WHERE nuid = ".$_POST['nuid'];
+        $result = mysqli_query($koneksi, $sql);
+        $user = mysqli_fetch_object($result);
+        if($user->password != $_POST['password']){            
+            echo json_encode([
+                "status" => false,
+                "nuid" => $_POST['nuid'],
+                "message" => "Action Failed, Wrong Password!",
+                "timestamp" => date("d M Y h:i:s", time()),
+            ]);
+            exit;
+        }
+        
+        if($user){
+            $sql = "SELECT * FROM `history_presensi` WHERE nuid = ".$_POST['nuid']." AND timestamp >= '".date("Y-m-d", time())."' AND timestamp <= '".date("Y-m-d", time()+86400)."'";
+            $result = mysqli_query($koneksi, $sql);
+            $datas = array();
+            while($data = mysqli_fetch_object($result)) $datas[]=$data;
+            echo json_encode([
+                "status" => false,
+                "data" => $datas,
+                "timestamp" => date("d M Y h:i:s", time()),
+            ]);
+            exit;
+        }
+    }
+
     else{
         echo json_encode([
             "status" => false,
             "nuid" => $_POST['nuid'],
+            "aksi" => $_POST['aksi'],
             "message" => "Command Action Failed, Incorrect Action!",
             "timestamp" => date("d M Y h:i:s", time()),
         ]);
