@@ -24,72 +24,97 @@ class LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color.fromARGB(118, 104, 58, 183),
       body: SafeArea(
         child: ListView(
           scrollDirection: Axis.vertical,
           children: <Widget>[
-                        
-            SizedBox(height: MediaQuery.of(context).size.height / 2 - 300),
             Container(
-              margin: EdgeInsets.symmetric(horizontal: 100),
-              width: double.infinity,
-              // height: MediaQuery.of(context).size.width / 10,
-              child: Text("LOGIN ADMIN", textAlign: TextAlign.center, style: TextStyle(color: Color.fromARGB(255, 255, 120, 120), fontSize: 35, fontWeight: FontWeight.bold))
-            ),     
-            SizedBox(height: 50),
-            Container(
-              //img1
-              margin: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width / 15),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  TextField(
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Email',
-                      labelStyle: TextStyle(fontSize: 20),
-                      errorText: _error[0] ? 'Value Can\'t Be Empty' : null,
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Column(mainAxisAlignment: MainAxisAlignment.center, crossAxisAlignment: CrossAxisAlignment.center, children: [
+                  Container(
+                    width: 400,
+                    height: 350,
+                    child: Card(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                        //set border radius more than 50% of height and width to make circle
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                              margin: EdgeInsets.symmetric(horizontal: 50),
+                              width: double.infinity,
+                              // height: MediaQuery.of(context).size.width / 10,
+                              child: Text("LOGIN ADMIN", textAlign: TextAlign.center, style: TextStyle(color: Colors.deepPurple, fontSize: 35, fontWeight: FontWeight.bold))),
+                          SizedBox(height: 20),
+                          Container(
+                            //img1
+                            margin: EdgeInsets.symmetric(horizontal: 50),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                TextField(
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'Email',
+                                    labelStyle: TextStyle(fontSize: 20),
+                                    errorText: _error[0] ? 'Value Can\'t Be Empty' : null,
+                                  ),
+                                  onSubmitted: (value) {
+                                    _doLogin(context);
+                                  },
+                                  controller: _data[0],
+                                )
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          Container(
+                            //img1
+                            margin: EdgeInsets.symmetric(horizontal: 50),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                TextField(
+                                  obscureText: true,
+                                  decoration: InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'Password',
+                                    labelStyle: TextStyle(fontSize: 20),
+                                    errorText: _error[1] ? 'Value Can\'t Be Empty' : null,
+                                  ),
+                                  onSubmitted: (value) {
+                                    _doLogin(context);
+                                  },
+                                  controller: _data[1],
+                                )
+                              ],
+                            ),
+                          ),
+                          SizedBox(height: 10),
+                          Container(
+                            margin: EdgeInsets.symmetric(horizontal: 50),
+                            width: double.infinity,
+                            height: 50,
+                            child: ElevatedButton(
+                              onPressed: () {
+                                _doLogin(context);
+                              },
+                              child: Text(
+                                "Log in",
+                                style: TextStyle(fontSize: 20),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    controller: _data[0],
                   )
-                ],
-              ),
-            ),
-            SizedBox(height: 50),
-            Container(
-              //img1
-              margin: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width / 15),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  TextField(
-                    obscureText: true,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Password',
-                      labelStyle: TextStyle(fontSize: 20),
-                      errorText: _error[1] ? 'Value Can\'t Be Empty' : null,
-                    ),
-                    controller: _data[1],
-                  )
-                ],
-              ),
-            ),
-            SizedBox(height: 50),
-            Container(
-              margin: EdgeInsets.symmetric(horizontal: MediaQuery.of(context).size.width / 15),
-              width: double.infinity,
-              height: 50,
-              child: ElevatedButton(
-                onPressed: () {
-                  _doLogin(context);
-                },
-                child: Text(
-                  "Log in",
-                  style: TextStyle(fontSize: 20),
-                ),
-              ),
-            ),            
+                ])),
           ],
         ),
       ),
@@ -119,7 +144,6 @@ class LoginPageState extends State<LoginPage> {
         setState(() {
           globals.isLoggedIn = true;
         });
-
         Alert(
           context: context,
           type: AlertType.info,

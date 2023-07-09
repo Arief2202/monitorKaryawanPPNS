@@ -1,6 +1,7 @@
 // ignore_for_file: use_key_in_widget_constructors, library_private_types_in_public_api, non_constant_identifier_names, prefer_interpolation_to_compose_strings, prefer_const_constructors, use_build_context_synchronously, unused_import
 
 import 'package:flutter/material.dart';
+import 'package:monitoring_karyawan_ppns/monitoring.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:monitoring_karyawan_ppns/loginPage.dart';
 import 'package:monitoring_karyawan_ppns/listKaryawan.dart';
@@ -35,8 +36,8 @@ class _MyAppState extends State<MyApp> {
       debugShowCheckedModeBanner: false,
       title: 'Auto Login',
       theme: ThemeData(
-        primarySwatch: Colors.blue,
-        // scaffoldBackgroundColor: Color(0xFF736AB7),
+        primarySwatch: Colors.deepPurple,
+        // scaffoldBackgroundColor: Color.fromARGB(255, 191, 182, 255),
       ),
       home: LoaderOverlay(child: MyHomePage()),
     );
@@ -103,6 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    return MonitoringPage();
     return globals.loadingAutologin ? Scaffold() : Scaffold(body: globals.isLoggedIn ? Menu() : LoginPage());
   }
 }

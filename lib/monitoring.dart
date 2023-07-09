@@ -25,7 +25,7 @@ class MonitoringPageState extends State<MonitoringPage> {
   void initState() {
     timer = Timer.periodic(Duration(milliseconds: 100), (Timer t) => updateValue());
     userLocation = [
-      UserLocation(nuid: "", email: "", name: "", username: "", currentLocation:Location(x: "0", y: "0", ruang: "", timestamp: "") ),
+      UserLocation(nuid: "", email: "", name: "", username: "", currentLocation: Location(x: "0", y: "0", ruang: "", timestamp: "")),
     ];
     super.initState();
   }
@@ -107,7 +107,7 @@ Widget dots(UserLocation user, String xStr, String yStr, String ruang, double wi
   double x = double.parse(xStr);
   double y = double.parse(yStr);
   // int totalWidth = 310; //map tanpa parkir
-  int totalWidth = 610; //map dengan parkir
+  int totalWidth = 510; //map dengan parkir
   int plusX = 0;
   int plusY = (width / (totalWidth / 96)).toInt();
   double scaleCircle = 65;
@@ -125,48 +125,46 @@ Widget dots(UserLocation user, String xStr, String yStr, String ruang, double wi
     width: width / scaleCircle,
     height: width / scaleCircle,
     child: GestureDetector(
-      onTap: () {
-        Alert(
-          context: context,
-          desc: "NUID :\n${user.nuid}\n\nName :\n${user.name}\n\nUsername :\n${user.username}\n\nEmail :\n${user.email}\n\nLokasi (${user.currentLocation.ruang})\nX : ${f.format(double.parse(user.currentLocation.x))}\nY : ${f.format(double.parse(user.currentLocation.y))}",
-          buttons: [
-            DialogButton(
-              child: Text(
-                "History Lokasi",
-                style: TextStyle(color: Colors.white, fontSize: 20),
-              ),
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return AbsensiPage(id: int.parse(user.nuid));
-                }));
-              },
-              color: Color.fromRGBO(0, 179, 134, 1.0),
-            ),
-            DialogButton(
-              child: Text(
-                "History Absensi",
-                style: TextStyle(color: Colors.white, fontSize: 20),
-              ),
-              onPressed: () {
-                Navigator.push(context, MaterialPageRoute(builder: (context) {
-                  return HistoryPresensiPage(id: int.parse(user.nuid));
-                }));
-              },
-              color: Color.fromRGBO(0, 179, 134, 1.0),
-            ),
-          ],
-          style: AlertStyle(
-            descStyle: TextStyle(fontSize: 15),
-            descTextAlign: TextAlign.center,
-          )
-        ).show();
-      },
-      child:  CircleAvatar(
-        backgroundColor: Color.fromARGB(200, 255, 0, 0),
-        child: Text(user.nuid, style: TextStyle(fontSize: width / scaleText)),
-        foregroundImage: NetworkImage("enterImageUrl"),
-      )
-    ),
+        onTap: () {
+          Alert(
+              context: context,
+              desc: "NUID :\n${user.nuid}\n\nName :\n${user.name}\n\nUsername :\n${user.username}\n\nEmail :\n${user.email}\n\nLokasi (${user.currentLocation.ruang})\nX : ${f.format(double.parse(user.currentLocation.x))}\nY : ${f.format(double.parse(user.currentLocation.y))}",
+              buttons: [
+                DialogButton(
+                  child: Text(
+                    "History Lokasi",
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return AbsensiPage(id: int.parse(user.nuid));
+                    }));
+                  },
+                  color: Color.fromRGBO(0, 179, 134, 1.0),
+                ),
+                DialogButton(
+                  child: Text(
+                    "History Absensi",
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                  ),
+                  onPressed: () {
+                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      return HistoryPresensiPage(id: int.parse(user.nuid));
+                    }));
+                  },
+                  color: Color.fromRGBO(0, 179, 134, 1.0),
+                ),
+              ],
+              style: AlertStyle(
+                descStyle: TextStyle(fontSize: 15),
+                descTextAlign: TextAlign.center,
+              )).show();
+        },
+        child: CircleAvatar(
+          backgroundColor: Color.fromARGB(200, 255, 0, 0),
+          child: Text(user.nuid, style: TextStyle(fontSize: width / scaleText)),
+          foregroundImage: NetworkImage("enterImageUrl"),
+        )),
   );
 }
 
